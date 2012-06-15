@@ -32,6 +32,11 @@ func (self *BigInt) MathInt() *big.Int {
 func (self *BigInt) Int() int {
 	return int(self.MathInt().Int64())
 }
+func NewBigIntString(s string, base int) *BigInt {
+	rval := big.NewInt(int64(0))
+	rval.SetString(s, base)
+	return (*BigInt)(rval)
+}
 func NewBigIntBytes(bytes []byte) *BigInt {
 	rval := big.NewInt(int64(0))
 	rval.SetBytes(bytes)

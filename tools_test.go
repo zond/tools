@@ -23,7 +23,17 @@ func bigIntTest(t *testing.T, i, b int, s string) {
 	}
 }
 
+func bigIntTestString(t *testing.T, s string, b int, s2 string, b2 int) {
+	r := NewBigIntString(s, b).BaseString(b2)
+	if r != s2 {
+		t.Error("Wrong representation of ", s, " in base ",b," when converted to base", b2, " : wanted ",s2," but got ",r)
+	}
+}
+
 func TestBigInt(t *testing.T) {
+	bigIntTestString(t, "45", 10, "50", 9)
+	bigIntTestString(t, "1712", 8, "68A", 12)
+	bigIntTestString(t, "45", 14, "2021", 3)
 	bigIntTest(t, 10, 10, "10")
 	bigIntTest(t, 11, 10, "11")
 	bigIntTest(t, 1, 10, "1")
