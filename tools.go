@@ -10,7 +10,7 @@ import (
 )
 
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
-var characters_len *big.Int
+const MAX_BASE = 61
 
 type BigInt big.Int
 func (self *BigInt) BaseString(base int) string {
@@ -41,10 +41,6 @@ func NewBigIntInt(i int) *BigInt {
 	return (*BigInt)(big.NewInt(int64(i)))
 }
 
-func init() {
-	characters_len = big.NewInt(int64(len(characters)))
-}
-
 func String(i int64, base int) {
 }
 
@@ -57,7 +53,7 @@ func Uuid() string {
 func RandomString(l int) string {
 	buffer := bytes.NewBufferString("")
 	for i := 0; i < l; i++ {
-		x, err := rand.Int(rand.Reader, characters_len)
+		x, err := rand.Int(rand.Reader, big.NewInt(MAX_BASE))
 		if err != nil {
 			panic(fmt.Sprint("Unable to create random string: ", err))
 		}
