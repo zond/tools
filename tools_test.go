@@ -13,7 +13,10 @@ func TestRandomString(t *testing.T) {
 }
 
 func TestUuid(t *testing.T) {
-	Uuid()
+	s := Uuid()
+	if len(s) != 16 {
+		t.Error("Uuid() should return 16 runes, but returned ", s)
+	}
 }
 
 func bigIntTest(t *testing.T, i, b int, s string) {

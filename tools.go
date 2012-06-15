@@ -45,14 +45,13 @@ func NewBigIntBytes(bytes []byte) *BigInt {
 func NewBigIntInt(i int) *BigInt {
 	return (*BigInt)(big.NewInt(int64(i)))
 }
-
-func String(i int64, base int) {
+func NewBigIntInt64(i int64) *BigInt {
+	return (*BigInt)(big.NewInt(i))
 }
 
 func Uuid() string {
-	upper := time.Now().Unix()
-	lower := int32(upper)
-	return string([]int32{int32(upper >> 32), lower})
+	timePart := NewBigIntInt64(time.Now().Unix())
+	return fmt.Sprint(timePart.BaseString(MAX_BASE), RandomString(10))
 }
 
 func RandomString(l int) string {
