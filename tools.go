@@ -17,13 +17,11 @@ func TimeClear() {
 	CountMap = make(map[string]int64)
 }
 func TimeIn(s string) {
-	TimingMap[s] = TimingMap[s] - time.Now().Unix()
+	TimingMap[s] = TimingMap[s] - time.Now().UnixNano()
 	CountMap[s] = CountMap[s] + 1
-	fmt.Println("in: ", s, ": ", TimingMap)
 }
 func TimeOut(s string) {
-	TimingMap[s] = TimingMap[s] + time.Now().Unix()
-	fmt.Println("out: ", s, ": ", TimingMap)
+	TimingMap[s] = TimingMap[s] + time.Now().UnixNano()
 }
 
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
