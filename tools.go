@@ -13,6 +13,14 @@ import (
 var TimeMap = make(map[string]int64)
 var CountMap = make(map[string]int64)
 
+func Pad(s interface{}, p interface{}, min int) string {
+	buffer := bytes.NewBufferString(fmt.Sprint(s))
+	for buffer.Len() < min {
+		buffer.Write([]byte(fmt.Sprint(p)))
+	}
+	return string(buffer.Bytes())
+}
+
 func TimeClear() {
 	TimeMap = make(map[string]int64)
 	CountMap = make(map[string]int64)
@@ -28,7 +36,7 @@ func Prof() []string {
 	var rval []string
 	for s, n := range TimeMap {
 		count := CountMap[s]
-		rval = append(rval, fmt.Sprintf("%v\t%v\t%v", s, n / count, count))
+		rval = append(rval, fmt.Sprint(Pad(s, " ", 15), Pad(n / count, " ", 15), Pad(count, " ", 5)))
 	}
 	sort.Sort(sort.StringSlice(rval))
 	return rval
