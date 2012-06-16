@@ -19,10 +19,11 @@ func TimeClear() {
 func TimeIn(s string) {
 	TimingMap[s] = TimingMap[s] - time.Now().Unix()
 	CountMap[s] = CountMap[s] + 1
+	fmt.Println("in: ", TimingMap)
 }
 func TimeOut(s string) {
 	TimingMap[s] = TimingMap[s] + time.Now().Unix()
-	fmt.Println(s, "has taken", TimingMap[s], "ms")
+	fmt.Println("out: ", TimingMap)
 }
 
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
