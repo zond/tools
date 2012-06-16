@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-var TimeMap = make(map[string]int64)
-var CountMap = make(map[string]int64)
+var timeMap = make(map[string]int64)
+var countMap = make(map[string]int64)
 
 func Pad(s interface{}, p interface{}, min int) string {
 	buffer := bytes.NewBufferString(fmt.Sprint(s))
@@ -21,24 +21,43 @@ func Pad(s interface{}, p interface{}, min int) string {
 	return string(buffer.Bytes())
 }
 
+type ProfData struct {
+	name string
+	count int64
+	spent int64
+}
+func NewProfData(s string) *ProfData {
+	return &ProfData{s, countMap[s], timeMap[s]}
+}
+func (self *ProfData) String(p int) string {
+	return fmt.Sprint(Pad(self.name, " ", p), Pad(self.Avg(), " ", p), Pad(self.count, " ", p))
+}
+func (self *ProfData) Avg() int64 {
+	return self.spent / self.count
+}
+
+type ProfDataSlice []*ProfData
+func (self ProfDataSlice) Len() int { return len(self) }
+func (self ProfDataSlice) Less(i, j int) bool { return self[i].Avg() < self[j].Avg() }
+func (self ProfDataSlice) Swap(i, j int) { self[i], self[j] = self[j], self[i] }
+
 func TimeClear() {
-	TimeMap = make(map[string]int64)
-	CountMap = make(map[string]int64)
+	timeMap = make(map[string]int64)
+	countMap = make(map[string]int64)
 }
 func TimeIn(s string) {
-	TimeMap[s] = TimeMap[s] - time.Now().UnixNano()
-	CountMap[s] = CountMap[s] + 1
+	timeMap[s] = timeMap[s] - time.Now().UnixNano()
+	countMap[s] = countMap[s] + 1
 }
 func TimeOut(s string) {
-	TimeMap[s] = TimeMap[s] + time.Now().UnixNano()
+	timeMap[s] = timeMap[s] + time.Now().UnixNano()
 }
-func Prof(pad int) []string {
-	var rval []string
-	for s, n := range TimeMap {
-		count := CountMap[s]
-		rval = append(rval, fmt.Sprint(Pad(n / count, " ", pad), Pad(s, " ", pad), Pad(count, " ", pad)))
+func Prof(pad int) []*ProfData {
+	var rval ProfDataSlice
+	for s, _ := range timeMap {
+		rval = append(rval, NewProfData(s))
 	}
-	sort.Sort(sort.StringSlice(rval))
+	sort.Sort(rval)
 	return rval
 }
 
