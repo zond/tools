@@ -9,19 +9,26 @@ import (
 	"time"
 )
 
-var TimingMap = make(map[string]int64)
+var TimeMap = make(map[string]int64)
 var CountMap = make(map[string]int64)
 
 func TimeClear() {
-	TimingMap = make(map[string]int64)
+	TimeMap = make(map[string]int64)
 	CountMap = make(map[string]int64)
 }
 func TimeIn(s string) {
-	TimingMap[s] = TimingMap[s] - time.Now().UnixNano()
+	TimeMap[s] = TimeMap[s] - time.Now().UnixNano()
 	CountMap[s] = CountMap[s] + 1
 }
 func TimeOut(s string) {
-	TimingMap[s] = TimingMap[s] + time.Now().UnixNano()
+	TimeMap[s] = TimeMap[s] + time.Now().UnixNano()
+}
+func Prof() map[string]int64 {
+	rval := make(map[string]int64)
+	for s, n := range TimeMap {
+		rval[s] = n / CountMap[s]
+	}
+	return rval
 }
 
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
