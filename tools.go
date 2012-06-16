@@ -22,6 +22,7 @@ func TimeIn(s string) {
 }
 func TimeOut(s string) {
 	TimingMap[s] = TimingMap[s] + time.Now().Unix()
+	fmt.Println(s, "has taken", TimingMap[s], "ms")
 }
 
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
