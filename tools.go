@@ -10,9 +10,15 @@ import (
 )
 
 var TimingMap = make(map[string]int64)
+var CountMap = make(map[string]int64)
 
+func TimeClear() {
+	TimingMap = make(map[string]int64)
+	CountMap = make(map[string]int64)
+}
 func TimeIn(s string) {
 	TimingMap[s] = TimingMap[s] - time.Now().Unix()
+	CountMap[s] = CountMap[s] + 1
 }
 func TimeOut(s string) {
 	TimingMap[s] = TimingMap[s] + time.Now().Unix()
