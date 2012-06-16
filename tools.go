@@ -36,7 +36,7 @@ func Prof(pad int) []string {
 	var rval []string
 	for s, n := range TimeMap {
 		count := CountMap[s]
-		rval = append(rval, fmt.Sprint(Pad(s, " ", pad), Pad(n / count, " ", pad), Pad(count, " ", pad)))
+		rval = append(rval, fmt.Sprint(Pad(n / count, " ", pad), Pad(s, " ", pad), Pad(count, " ", pad)))
 	}
 	sort.Sort(sort.StringSlice(rval))
 	return rval
