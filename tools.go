@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
+	"sort"
 	"time"
 )
 
@@ -23,11 +24,13 @@ func TimeIn(s string) {
 func TimeOut(s string) {
 	TimeMap[s] = TimeMap[s] + time.Now().UnixNano()
 }
-func Prof() map[string]int64 {
-	rval := make(map[string]int64)
+func Prof() []string {
+	var rval []string
 	for s, n := range TimeMap {
-		rval[s] = n / CountMap[s]
+		count := CountMap[s]
+		rval = append(rval, fmt.Sprintf("%v\t%v\t%v", s, n / count, count))
 	}
+	sort.Sort(sort.StringSlice(rval))
 	return rval
 }
 
