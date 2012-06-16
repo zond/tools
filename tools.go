@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+var TimingMap = make(map[string]int64)
+
+func TimeIn(s string) {
+	TimingMap[s] = TimingMap[s] - time.Now().Unix()
+}
+func TimeOut(s string) {
+	TimingMap[s] = TimingMap[s] + time.Now().Unix()
+}
+
 const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz"
 const MAX_BASE = 61
 
