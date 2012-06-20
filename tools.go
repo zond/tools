@@ -78,6 +78,9 @@ func (self *BigInt) BaseStringBig(base *BigInt) string {
 	rest.MathInt().DivMod(rest.MathInt(), base.MathInt(), rval.MathInt())
 	return fmt.Sprintf("%s%s", rest.BaseStringBig(base), string(characters[rval.Int()]))
 }
+func (self *BigInt) Bytes() []byte {
+	return self.MathInt().Bytes()
+}
 func (self *BigInt) MathInt() *big.Int {
 	return (*big.Int)(self)
 }
