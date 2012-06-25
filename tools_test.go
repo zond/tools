@@ -3,6 +3,8 @@ package tools
 
 import (
 	"testing"
+	"time"
+	"fmt"
 )
 
 func TestRandomString(t *testing.T) {
@@ -76,4 +78,33 @@ func TestMap(t *testing.T) {
 	} else {
 		t.Error("should have content")
 	}
+}
+
+func TestMapSpeed(t *testing.T) {
+	m := NewMap()
+	b := time.Now()
+	n := 10000
+	for i := 0; i < n; i++ {
+		m.Put(i, i)
+		j, _ := m.Get(i)
+		if j != i {
+			t.Error("should be same value")
+		}
+	}
+	fmt.Println(n, " concurrent iterations in ", time.Now().Sub(b))
+}
+
+func TestNativeMapSpeed(t *testing.T) {
+	m := make(map[int]int)
+	b := time.Now()
+	n := 10000
+	for i := 0; i < n; i++ {
+		m[i] = i
+		j, _ := m[i]
+		if j != i {
+			t.Error("should be same value")
+		}
+	}
+	fmt.Println(n, " native iterations in ", time.Now().Sub(b))
+
 }
