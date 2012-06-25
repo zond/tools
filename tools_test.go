@@ -62,3 +62,18 @@ func TestBigInt(t *testing.T) {
 	bigIntTest(t, 615, 16, "267")
 	bigIntTest(t, 11261, 16, "2BFD")
 }
+
+func TestMap(t *testing.T) {
+	m := NewMap()
+	if _, ok := m.Get("hej"); ok {
+		t.Error("should not have content")
+	}
+	m.Put("hej", "jaha")
+	if v, ok := m.Get("hej"); ok {
+		if v != "jaha" {
+			t.Error("should have jaha")
+		}
+	} else {
+		t.Error("should have content")
+	}
+}

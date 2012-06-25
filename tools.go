@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"sort"
 	"time"
+	"runtime"
 )
 
 var timeMap = make(map[string]int64)
@@ -119,4 +120,59 @@ func RandomString(l int) string {
 		fmt.Fprintf(buffer, "%s", string(characters[int(x.Int64())]))
 	}
 	return string(buffer.Bytes())
+}
+
+const (
+	invalid = iota
+	PUT
+	GET
+)
+
+type response struct {
+	value interface{}
+	ok bool
+}
+type request struct {
+	key interface{}
+	value interface{}
+	typ int
+	out chan *response
+}
+
+type Map struct {
+	content map[interface{}]interface{}
+	in chan *request
+}
+func NewMap() *Map {
+	rval := &Map{make(map[interface{}]interface{}), make(chan *request)}
+	go rval.start()
+	runtime.SetFinalizer(rval, func(m *Map) { m.stop() })
+	return rval
+}
+func (self *Map) stop() {
+	close(self.in)
+}
+func (self *Map) start() {
+	for request := range self.in {
+		switch request.typ {
+		case PUT:
+			self.content[request.key] = request.value
+			close(request.out)
+		case GET:
+			current, ok := self.content[request.key]
+			request.out <- &response{current, ok}
+			close(request.out)
+		}
+	}
+}
+func (self *Map) Get(k interface{}) (interface{}, bool) {
+	request := &request{k, nil, GET, make(chan *response)}
+	self.in <- request
+	response := <- request.out
+	return response.value, response.ok
+}
+func (self *Map) Put(k, v interface{}) {
+	request := &request{k, v, PUT, make(chan *response)}
+	self.in <- request
+	<- request.out
 }
