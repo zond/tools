@@ -81,25 +81,27 @@ func TestMap(t *testing.T) {
 
 func action(b *testing.B, m *Map, i int, do, done chan bool) {
 	<- do
-	m.Put(i, i)
-	j, _ := m.Get(i)
-	if j != i {
-		b.Error("should be same value")
+	for j := 0; j < i; j++ {
+		m.Put(j, j)
+		l, _ := m.Get(j)
+		if l != j {
+			b.Error("should be same value")
+		}
 	}
 	done <- true
 }
 
-func BenchmarkMyMapConc(b *testing.B) {
+func BenchmarkHashConc(b *testing.B) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	do := make(chan bool)
 	done := make(chan bool)
 	m := NewMap()
-	for i := 0; i < b.N; i++ {
-		go action(b, m, i, do, done)
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go action(b, m, b.N, do, done)
 	}
 	close(do)
 	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < runtime.NumCPU(); i++ {
 		<- done
 	}
 	b.StopTimer()
