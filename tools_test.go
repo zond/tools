@@ -2,6 +2,7 @@
 package tools
 
 import (
+	"runtime"
 	"testing"
 )
 
@@ -76,6 +77,33 @@ func TestMap(t *testing.T) {
 	} else {
 		t.Error("should have content")
 	}
+}
+
+func action(b *testing.B, m *Map, i int, do, done chan bool) {
+	<- do
+	m.Put(i, i)
+	j, _ := m.Get(i)
+	if j != i {
+		b.Error("should be same value")
+	}
+	done <- true
+}
+
+func BenchmarkMyMapConc(b *testing.B) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	do := make(chan bool)
+	done := make(chan bool)
+	m := NewMap()
+	for i := 0; i < b.N; i++ {
+		go action(b, m, i, do, done)
+	}
+	close(do)
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		<- done
+	}
+	b.StopTimer()
+	runtime.GOMAXPROCS(1)
 }
 
 func BenchmarkMyMap(b *testing.B) {
