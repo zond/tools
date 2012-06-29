@@ -91,7 +91,7 @@ func action(b *testing.B, m *Map, i int, do, done chan bool) {
 	done <- true
 }
 
-func BenchmarkHashConc(b *testing.B) {
+func BenchmarkMyMapConc(b *testing.B) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	do := make(chan bool)
 	done := make(chan bool)
