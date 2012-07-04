@@ -79,7 +79,12 @@ func TestMap(t *testing.T) {
 	}
 }
 
-func action(b *testing.B, m *Map, i int, do, done chan bool) {
+type maplike interface {
+	Get(k interface{}) (interface{}, bool)
+	Put(k, v interface{})
+}
+
+func action(b *testing.B, m maplike, i int, do, done chan bool) {
 	<- do
 	for j := 0; j < i; j++ {
 		m.Put(j, j)
@@ -118,6 +123,8 @@ func BenchmarkMyMap(b *testing.B) {
 		}
 	}
 }
+
+
 
 func BenchmarkNativeMap(b *testing.B) {
 	m := make(map[int]int)

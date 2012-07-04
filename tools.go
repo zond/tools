@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
+	"sync"
 	"time"
-	"runtime"
 )
 
 var timeMap = make(map[string]int64)
@@ -141,38 +141,20 @@ type request struct {
 
 type Map struct {
 	content map[interface{}]interface{}
-	in chan *request
+	lock *sync.RWMutex
 }
 func NewMap() *Map {
-	rval := &Map{make(map[interface{}]interface{}), make(chan *request)}
-	go rval.start()
-	runtime.SetFinalizer(rval, func(m *Map) { m.stop() })
-	return rval
-}
-func (self *Map) stop() {
-	close(self.in)
-}
-func (self *Map) start() {
-	for request := range self.in {
-		switch request.typ {
-		case PUT:
-			self.content[request.key] = request.value
-			close(request.out)
-		case GET:
-			current, ok := self.content[request.key]
-			request.out <- &response{current, ok}
-			close(request.out)
-		}
-	}
+	return &Map{make(map[interface{}]interface{}), new(sync.RWMutex)}
 }
 func (self *Map) Get(k interface{}) (interface{}, bool) {
-	request := &request{k, nil, GET, make(chan *response)}
-	self.in <- request
-	response := <- request.out
-	return response.value, response.ok
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	v, ok := self.content[k]
+	return v,ok
 }
 func (self *Map) Put(k, v interface{}) {
-	request := &request{k, v, PUT, make(chan *response)}
-	self.in <- request
-	<- request.out
+	self.lock.Lock()
+	defer self.lock.Unlock()
+	self.content[k] = v
 }
+
