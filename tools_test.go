@@ -4,6 +4,7 @@ package tools
 import (
 	"runtime"
 	"testing"
+	"math/rand"
 )
 
 func TestRandomString(t *testing.T) {
@@ -87,11 +88,8 @@ type maplike interface {
 func action(b *testing.B, m maplike, i int, do, done chan bool) {
 	<- do
 	for j := 0; j < i; j++ {
-		m.Put(j, j)
-		l, _ := m.Get(j)
-		if l != j {
-			b.Error("should be same value")
-		}
+		m.Put(j, rand.Int())
+		m.Get(j)
 	}
 	done <- true
 }
