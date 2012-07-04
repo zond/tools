@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
-	"github.com/petar/GoLLRB/llrb"
 	"sync"
 	"time"
 )
@@ -204,11 +203,9 @@ func (self *Map) Put(k, v interface{}) (interface{}, bool) {
 	self.content[k] = v
 	return old, ok
 }
+func (self *Map) Size() int {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	return len(self.content)
+}
 
-type Tree struct {
-	content *llrb.Tree
-	lock *sync.RWMutex
-}
-func NewTree(f llrb.LessFunc) *Tree {
-	return &Tree{llrb.New(f), nil}
-}
