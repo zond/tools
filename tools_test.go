@@ -82,7 +82,7 @@ func TestMap(t *testing.T) {
 
 type maplike interface {
 	Get(k interface{}) (interface{}, bool)
-	Put(k, v interface{})
+	Put(k, v interface{}) (interface{}, bool)
 }
 
 func action(b *testing.B, m maplike, i int, do, done chan bool) {

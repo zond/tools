@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
+	"github.com/petar/GoLLRB/llrb"
 	"sync"
 	"time"
 )
@@ -152,9 +153,62 @@ func (self *Map) Get(k interface{}) (interface{}, bool) {
 	v, ok := self.content[k]
 	return v,ok
 }
-func (self *Map) Put(k, v interface{}) {
+func (self *Map) Delete(k interface{}) (interface{}, bool) {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	if v, ok := self.content[k]; ok {
+		self.lock.Lock()
+		defer self.lock.Unlock()
+		delete(self.content, k)
+		return v, ok
+	}
+	return nil, false
+}
+func (self *Map) DeleteIfPresent(k, exp interface{}) bool {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	if v, ok := self.content[k]; ok && v == exp {
+		self.lock.Lock()
+		defer self.lock.Unlock()
+		delete(self.content, k)
+		return true
+	}
+	return false	
+}
+func (self *Map) PutIfPresent(k, v, exp interface{}) bool {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	if v, ok := self.content[k]; ok && v == exp{
+		self.lock.Lock()
+		defer self.lock.Unlock()
+		self.content[k] = v
+		return true
+	}
+	return false
+}
+func (self *Map) PutIfMissing(k, v interface{}) bool {
+	self.lock.RLock()
+	defer self.lock.RUnlock()
+	if v, ok := self.content[k]; !ok {
+		self.lock.Lock()
+		defer self.lock.Unlock()
+		self.content[k] = v
+		return true
+	}
+	return false
+}
+func (self *Map) Put(k, v interface{}) (interface{}, bool) {
 	self.lock.Lock()
 	defer self.lock.Unlock()
+	old, ok := self.content[k]
 	self.content[k] = v
+	return old, ok
 }
 
+type Tree struct {
+	content *llrb.Tree
+	lock *sync.RWMutex
+}
+func NewTree(f llrb.LessFunc) *Tree {
+	return &Tree{llrb.New(f), nil}
+}
