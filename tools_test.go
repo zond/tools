@@ -95,6 +95,7 @@ func action(b *testing.B, m maplike, i int, do, done chan bool) {
 }
 
 func BenchmarkMyMapConc(b *testing.B) {
+	b.StopTimer()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	do := make(chan bool)
 	done := make(chan bool)
@@ -107,7 +108,6 @@ func BenchmarkMyMapConc(b *testing.B) {
 	for i := 0; i < runtime.NumCPU(); i++ {
 		<- done
 	}
-	b.StopTimer()
 	runtime.GOMAXPROCS(1)
 }
 
